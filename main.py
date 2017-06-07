@@ -13,7 +13,7 @@ s.pack()
 
 
 def setInitialValues():
-    global Tilex, Tiley, TileSpeedx, TileSpeedy, TileWidth, TileHeight, Ballx, Bally, BallSpeedx, BallSpeedy, BallRadius, xMouse, yMouse, ballcolour, Coinsx, Coinsy, CoinsRadius
+    global Tilex, Tiley, TileSpeedx, TileSpeedy, TileWidth, TileHeight, Ballx, Bally, BallSpeedx, BallSpeedy, BallRadius, xMouse, yMouse, ballcolour, Coinsx, Coinsy, CoinsRadius, ConstantSpeed, ConstantSpeedNegative, CoinsColour
     ballcolour = "black"
     xMouse = 0
     yMouse = 0
@@ -30,7 +30,10 @@ def setInitialValues():
     BallRadius = 50
     Coinsx = []
     Coinsy= []
+    CoinsColour= []
     CoinsRadius= 25
+    ConstantSpeed = 5
+    ConstantSpeedNegative= -5
 
 
 ##def mouseInsideBall():
@@ -57,18 +60,20 @@ def setInitialValues():
 ##        BallSpeedy = -15
 
 def keyDownHandler(event):
-    global TileSpeedx, TileSpeedy, BallSpeedy, BallSpeedx, SpeedPositive, SpeedNegative
+    global ConstantSpeed, ConstantSpeedNegative,TileSpeedx, TileSpeedy, BallSpeedy, BallSpeedx, SpeedPositive, SpeedNegative
 
     if event.keysym == "Left":
-        TileSpeedx = -15
+        TileSpeedx = ConstantSpeedNegative - 10
 
 
     elif event.keysym == "Right":
-        TileSpeedx = 15
+        TileSpeedx = ConstantSpeed + 10
 
     elif event.keysym == "Up":
-        BallSpeedy = -5
-        BallSpeedx = 5
+        BallSpeedy = ConstantSpeedNegative
+        BallSpeedx = ConstantSpeed
+    elif event.keysym == "Q" and "q":
+        s.delete(Ball, Tile)
 
 def keyUpHandler(event):
     global TileSpeedx, TileSpeedy, BallSpeedy, BallSpeedx
@@ -79,25 +84,26 @@ def keyUpHandler(event):
 
         
 def updateBallPosition():
-    global Tilex, Tiley, Ballx, Bally, BallSpeedx, BallSpeedy, BallRadius, TileSpeedx, TileSpeedy
+    global ConstantSpeed, ConstantSpeedNegative,Tilex, Tiley, Ballx, Bally, BallSpeedx, BallSpeedy, BallRadius, TileSpeedx, TileSpeedy
 
     if Ballx+BallRadius >= WIDTH:
-        BallSpeedx = -15
+        BallSpeedx = ConstantSpeedNegative
     elif Ballx <= 0:
-        BallSpeedx = 15
+        BallSpeedx = ConstantSpeed
        
         
     if Bally+BallRadius >= Tiley:
         if Ballx + BallRadius  <= Tilex + TileWidth and Ballx + BallRadius >= Tilex  :
-            BallSpeedy = -15
+            BallSpeedy = ConstantSpeedNegative
+
     elif Bally <=0:
-        BallSpeedy = 15
+        BallSpeedy = ConstantSpeed
         
     if Tilex + TileWidth >= WIDTH:
-        TileSpeedx = -15
+        TileSpeedx = ConstantSpeedNegative - 10
     
     elif Tilex <= 0:
-        TileSpeedx = 15
+        TileSpeedx = ConstantSpeed + 10
 
     if Bally >= HEIGHT:
         BallSpeedx= 0
@@ -117,39 +123,39 @@ def updateBallPosition():
     print (Bally, "     ")
 
 
-# def getHexValue (x):
-#
-#     H= ["1","2","3","4","5", "6","7","8","9","A","B","C","D","E","F"]
-#     hexValue = ""
-#     while x != 0:
-#         q = int(x/16)
-#         r = x % 16
-#         hexValue = H[r] + hexValue
-#         x = q
-#
-#     if hexValue == "":
-#         return "00"
-#
-#     elif len(hexValue) == 1:
-#         return "0" + hexValue
-#
-#     else:
-#         return hexValue
-#
-# def DrawBackground():
-#    for s in range(0,256):
-#         rColor = getHexValue( 255- s )
-#         color = "#FFC0" + rColor
-#
-#         x = 3 * shade + 200
-#
-#         s.create_rectangle( 0, x, 1000, x+3, fill = color, outline = color)
+def getHexValue (x):
+
+    H= ["1","2","3","4","5", "6","7","8","9","A","B","C","D","E","F"]
+    hexValue = ""
+    while x != 0:
+        q = int(x/16)
+        r = x % 16
+        hexValue = H[r] + hexValue
+        x = q
+
+    if hexValue == "":
+        return "00"
+
+    elif len(hexValue) == 1:
+        return "0" + hexValue
+
+    else:
+        return hexValue
+
+def DrawBackground():
+   for s in range(0,256):
+        rColor = getHexValue( 255- s )
+        color = "#FFC0" + rColor
+
+        x = 3 * shade + 200
+
+        s.create_rectangle( 0, x, 1000, x+3, fill = color, outline = color)
 def getDistance(x1, y1, x2, y2):
     return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
 def DrawCoins():
-    global coinx, coiny, Coinsx, Coinsy, CoinsRadius
+    global coinx, coiny, Coinsx, Coinsy, CoinsRadius, CoinsColour
     for m in range(15):
 
         DistanceRight = False
@@ -169,12 +175,11 @@ def DrawCoins():
             if Colison == 0:
                 DistanceRight = True
 
-    Coinsx.append(coinx)
-    Coinsy.append(coiny)
-    # Colors = choice(["Red", "yellow","green", "Blue"])
-    # CoinsColor.append(Colors)
-    Coin = s.create_oval(coinx - CoinsRadius, coiny - CoinsRadius, coinx + CoinsRadius, coiny + CoinsRadius, fill="Red",
-                         outline="white")
+        Coinsx.append(coinx)
+        Coinsy.append(coiny)
+        Colors = choice(["red", "yellow", "green", "blue"])
+        Coin = s.create_oval(coinx - CoinsRadius, coiny - CoinsRadius, coinx + CoinsRadius, coiny + CoinsRadius, fill=Colors,
+                         outline= Colors)
 
 
 def checkco():
@@ -195,13 +200,15 @@ def runGame():
     setInitialValues()
     DrawCoins()
     while True:
+        checkco()
         updateBallPosition()
         DrawObject()
         s.update()
         sleep(0.01)
         s.delete(Tile, Ball)
-
-##def QuitGame ():
+#
+# def QuitGame ():
+#     if
 ##    
 tk.after(0, runGame)
 s.bind("<Key>", keyDownHandler)
