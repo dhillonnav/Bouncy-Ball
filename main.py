@@ -12,7 +12,7 @@ s = Canvas(tk, width=WIDTH, height=HEIGHT, background="skyblue")
 s.pack()
 
 def setInitialValues():
-    global Tilex, Tiley, TileSpeedx, TileSpeedy, TileWidth, TileHeight, Ballx, Bally, BallSpeedx, BallSpeedy, BallRadius, xMouse, yMouse, ballcolour, Coinsx, Coinsy, CoinsRadius, ConstantSpeed, ConstantSpeedNegative, CoinsColour, Collided, Coin
+    global startMessage, WinMessage,  gameRunning, PlayGame, Tilex, Tiley, TileSpeedx, TileSpeedy, TileWidth, TileHeight, Ballx, Bally, BallSpeedx, BallSpeedy, BallRadius, xMouse, yMouse, ballcolour, Coinsx, Coinsy, CoinsRadius, ConstantSpeed, ConstantSpeedNegative, CoinsColour, Collided, Coin
     ballcolour = "black"
     xMouse = 0
     yMouse = 0
@@ -35,6 +35,65 @@ def setInitialValues():
     ConstantSpeedNegative= -15
     Collided= False
 
+
+    WinMessage = 0
+    gameRunning = True
+
+
+def drawIntroScreen():
+    global playButton, gravStrength, gravityLabel, gravityChooser, startMessage, InstructionLabel, LevelChooser
+    startMessage = s.create_text(350, 50, text="Catch Some Fish", font="Times 38", fill="red",
+                                      anchor=W)
+    playButton = Button(tk, text="Play", font="Times 30", command=playButtonPressed, anchor=CENTER)
+    playButton.pack()
+    playButton.place(x=500, y=250, width=100, height=50)
+
+    InstructionLabel = Button(tk, text = "Instructions", font= "Times 30")
+    InstructionLabel.pack()
+    InstructionLabel.place(x=435, y=300)
+
+    LevelChooser = Listbox(tk)
+    LevelChooser.pack()
+    LevelChooser.place(x = 450, y = 360)
+    LevelChooser.config( height=3, width=9 , font= "Times 30")
+
+    for item in ["EASY","MEDIUM","HARD"]:
+        LevelChooser.insert( END, item )
+
+    s.update()
+
+
+def playButtonPressed():
+    global gameMode, playButton, gravStrength, PlayGame
+
+    # Erases all the buttons before starting the main game
+    playButton.destroy()
+    InstructionLabel.destroy()
+    LevelChooser.destroy()
+    s.delete(startMessage)
+
+    gameMode = "play"
+    runGame()
+
+
+def mouseClickHandler(event):
+    global gameMode
+
+    if gameMode == "intro screen":
+        pass
+
+def backToIntro():
+    global gameMode, backToIntroButton
+
+    s.delete(startMessage)
+    backToIntroButton.destroy()
+    start()
+
+def start():
+    global gameMode
+
+    gameMode = "intro screen"  # "play" is the other possible value for this string
+    drawIntroScreen()
 
 
 def keyDownHandler(event):
@@ -191,10 +250,22 @@ def DrawObject():
 
 
 def runGame():
+    global startMessage, gameRunning, backToIntroButton
     setInitialValues()
     DrawCoins()
 
+
+
     while True:
+        backToIntroButton = Button(tk, text="Reset Game", font="Times 25", command=backToIntro, anchor=CENTER)
+        backToIntroButton.pack()
+        backToIntroButton.place(x=600, y=450)
+
+        if gameMode == "play":
+            setInitialValues()
+
+            endGame()
+            runGame()
 
         updateBallPosition()
         DrawObject()
@@ -206,7 +277,7 @@ def runGame():
 # def QuitGame ():
 #     if
 ##    
-tk.after(0, runGame)
+tk.after(0, start)
 s.bind("<Key>", keyDownHandler)
 s.bind("<KeyRelease>", keyUpHandler)
 s.pack()
