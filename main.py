@@ -3,15 +3,79 @@ from tkinter import *
 from random import *
 from time import *
 
-tk = Tk()
-
 WIDTH = 1000
 HEIGHT = 750
 
-s = Canvas(tk, width=WIDTH, height=HEIGHT, background="skyblue")
-s.pack()
+# constants
+PLAY = 0
+INST = 1
+INTRO = 2
+EASY = 3
+MEDIUM = 4
+HARD = 5
 
-def setInitialValues():
+# global variables
+state = INTRO
+
+def instructions():
+    pass
+
+def easyButton():
+    setInitialValues(EASY)
+
+def mediumButton():
+    setInitialValues(MEDIUM)
+
+def hardButton():
+    setInitialValues(HARD)
+
+def levelsButton():
+    global EsayLevel, MediumLevel, HardLevel, backToIntroButton, tk
+    EsayLevel= Button(tk, text="Easy", command=easyButton, font="Times 30")
+    EsayLevel.pack()
+    EsayLevel.place(x=435, y=300)
+    MediumLevel= Button(tk, text="Medium", command=mediumButton, font="Times 30")
+    MediumLevel.pack()
+    MediumLevel.place(x=435, y=400)
+    HardLevel= Button(tk, text="Hard", command=hardButton, font="Times 30")
+    HardLevel.pack()
+    HardLevel.place(x=435, y=500)
+    backToIntroButton = Button(tk, text="Reset Game", font="Times 25", command=backToIntro, anchor=CENTER)
+    backToIntroButton.pack()
+    backToIntroButton.place(x=800, y=450)
+
+def playPressed():
+    global InstructionLabel, playButton, startMessage, background
+    InstructionLabel.destroy()
+    playButton.destroy()
+    s.delete(startMessage)
+    s.update()
+    state = PLAY
+
+def instPressed():
+    state = INST
+
+def drawIntroScreen():
+    global InstructionLabel, playButton, startMessage, background, tk, s
+
+    bac_img = PhotoImage(file="back.gif")
+    background = s.create_image(500, 400, image=bac_img)
+
+    startMessage = s.create_text(350, 50, text="Catch Some Fish", font="Times 38", fill="red", anchor=W)
+
+    playButton = Button(tk, text="Play", font="Times 30", command=playPressed, anchor=CENTER)
+    playButton.pack()
+    playButton.place(x=500, y=250, width=100, height=50)
+
+    InstructionLabel = Button(tk, text="Instructions", command=instPressed, font="Times 30")
+    InstructionLabel.pack()
+    InstructionLabel.place(x=435, y=300)
+    s.update()
+
+def intro_screen():
+    pass
+
+def setInitialValues(level):
     global LevelChooser, startMessage, WinMessage,  gameRunning, PlayGame, Tilex, Tiley, TileSpeedx, TileSpeedy, TileWidth, TileHeight, Ballx, Bally, BallSpeedx, BallSpeedy, BallRadius, xMouse, yMouse, ballcolour, Coins, Coinsx, Coinsy, CoinsRadius, ConstantSpeed, ConstantSpeedNegative, CoinsColour, Collided, Coin
     ballcolour = "black"
     xMouse = 0
@@ -20,12 +84,25 @@ def setInitialValues():
     TileHeight = 50
     Tilex = (.45 * WIDTH)
     Tiley = (.87 * HEIGHT)
-    TileSpeedx = 0
-    TileSpeedy = 0
+
+    if level == EASY:
+        TileSpeedx = 0
+        TileSpeedy = 0
+        BallSpeedx = 0
+        BallSpeedy = 0
+    elif level == MEDIUM:
+        TileSpeedx = 0
+        TileSpeedy = 0
+        BallSpeedx = 0
+        BallSpeedy = 0
+    elif level == HARD:
+        TileSpeedx = 0
+        TileSpeedy = 0
+        BallSpeedx = 0
+        BallSpeedy = 0
+
     Ballx = (.45 * WIDTH)
     Bally = (.82 * HEIGHT)
-    BallSpeedx = 0
-    BallSpeedy = 0
     BallRadius = 57
     Coinsx = []
     Coinsy= []
@@ -34,82 +111,12 @@ def setInitialValues():
     ConstantSpeed = 15
     ConstantSpeedNegative= -15
     Collided= False
-
-
     WinMessage = 0
     gameRunning = True
 
 
-def drawIntroScreen():
-    global Back, backToIntroButton,playButton, gravStrength, gravityLabel, gravityChooser, startMessage, InstructionLabel, LevelChooser
-    back = PhotoImage(file = "back.gif")
-    Back =  s.create_image(500, 400, image = back)
-
-    startMessage = s.create_text(350, 50, text="Catch Some Fish", font="Times 38", fill="red",
-                                                                                            anchor=W)
-    playButton = Button(tk, text="Play", font="Times 30", command=playButtonPressed, anchor=CENTER)
-    playButton.pack()
-    playButton.place(x=500, y=250, width=100, height=50)
-
-    InstructionLabel = Button(tk, text = "Instructions", font= "Times 30")
-    InstructionLabel.pack()
-    InstructionLabel.place(x=435, y=300)
-
-    s.update()
-
-def levelsButton():
-    global EsayLevel, MediumLevel, HardLevel, backToIntroButton
-    EsayLevel= Button(tk, text= "Esay", font= "Times 30")
-    EsayLevel.pack()
-    EsayLevel.place(x=435, y= 300)
-    MediumLevel= Button(tk, text= "Medium", font= "Times 30")
-    MediumLevel.pack()
-    MediumLevel.place(x=435, y=400)
-    HardLevel= Button(tk, text= "Hard", font= "Times 30")
-    HardLevel.pack()
-    HardLevel.place(x=435, y=500)
-    backToIntroButton = Button(tk, text="Reset Game", font="Times 25", command=backToIntro, anchor=CENTER)
-    backToIntroButton.pack()
-    backToIntroButton.place(x=800, y=450)
-
-def playButtonPressed():
-    global gameMode, playButton, PlayGame, drawIntroScreen
-
-    InstructionLabel.destroy()
-    playButton.destroy()
-
-    s.delete(startMessage, Back)
-
-    gameMode = "play"
-    levelsButton()
-    
-def reStartButtonPressed():
-    global gameMode, backtoIntroButton, EsayLevel, MediumLevel, HardLevel
-    gameMode = "Reset Game"
-    backToIntroButton.destroy()
-    EsayLevel.destroy()
-    MediumLevel.destroy()
-    HardLevel.destroy()
-    
-def mouseClickHandler(event):
-    global gameMode, DrawObject, DrawCoins, levelsButton
-
-   
-def backToIntro():
-    global gameMode
-    s.delete(Coins, Tile, Ball)
-    s.delete(Ball,Tile, Coins)
-    backToIntroButton.destroy()
-    HardLevel.destroy()
-    EsayLevel.destroy()
-    MediumLevel.destroy()
-
-    start()
-
-def start():
-    global gameMode
-    gameMode = "intro screen"
-    drawIntroScreen()
+def play_game():
+    exit(1)
 
 def keyDownHandler(event):
     global ConstantSpeed, ConstantSpeedNegative,TileSpeedx, TileSpeedy, BallSpeedy, BallSpeedx, SpeedPositive, SpeedNegative
@@ -130,7 +137,6 @@ def keyUpHandler(event):
 
     TileSpeedx = 0
     TileSpeedy = 0
-
 
 def updateBallPosition():
 
@@ -182,6 +188,9 @@ def updateBallPosition():
     Bally = Bally + BallSpeedy
     print (Bally, "     ")
 
+
+
+    
 def getHexValue (x):
     H= ["1","2","3","4","5", "6","7","8","9","A","B","C","D","E","F"]
     hexValue = ""
@@ -201,11 +210,11 @@ def getHexValue (x):
         return hexValue
 
 def DrawBackground():
-   for k in range(0,256):
-        rColor = getHexValue( 255- k )
+   for x in range(0,256):
+        rColor = getHexValue(  )
         color = "#FFC0" + rColor
 
-        x = 3 * k + 200
+        x = 3 * x + 200
         s.create_oval( 0, x, 1000, x+3, fill = color, outline = color)
 
 def getDistance(x1, y1, x2, y2):
@@ -239,42 +248,57 @@ def DrawCoins():
                          outline= Colors)
 
 def DrawObject():
-    global Ball, Tile, Tile1, Ball1
+    global Ball, Tile, Tile1, Ball1, s
     Ball1  = PhotoImage(file = "fishthenet.gif")
     Ball = s.create_image(Ballx, Bally, image = Ball1)
     Tile1 = PhotoImage(file = "boat.gif")
     Tile =  s.create_image(Tilex, Tiley, image = Tile1)
 
 def runGame():
-    global startMessage, gameRunning, backToIntroButton, Coins
-    setInitialValues()
-    DrawCoins()
+    global startMessage, gameRunning, backToIntroButton, Coins, LevelButton, gameMode
+
+    if state == INTRO:
+        drawIntroScreen()
+    elif state == PLAY:
+        play_game()
+    elif state == INST:
+        pass
+
+    #setInitialValues()
+    #DrawCoins()
     s.update()
-    sleep(2)
-    s.delete(startMessage)
-    while True:
-        DrawObject()
+    sleep(0.03)
+    #s.delete(startMessage)
 
-        updateBallPosition()
-        if gameMode == "play":
-            setInitialValues()
+    #gameMode = "Easy"
+    #LevelButton()
+    #setInitialValues()
+    #DrawObject()
+    #updateBallPosition()
+    #endGame()
+    #runGame()
 
-        endGame()
-        runGame()
-
-
-
-    s.update()
-    sleep(0.01)
-    s.delete(Tile, Ball,Coins)
+    #s.update()
+    #sleep(0.01)
+    #s.delete(Tile, Ball, Coins)
 
 
+def main():
+    global tk, s, state
 
-tk.after(0, start)
-tk.after(0, runGame)
-s.bind("<Button-1>", mouseClickHandler)
-s.bind("<Key>", keyDownHandler)
-s.bind("<KeyRelease>", keyUpHandler)
-s.pack()
-s.focus_set()
-tk.mainloop()
+    state = INTRO
+    tk = Tk()
+
+    s = Canvas(tk, width=WIDTH, height=HEIGHT, background="black")
+    s.pack()
+
+    s.bind("<Key>", keyDownHandler)
+    s.bind("<KeyRelease>", keyUpHandler)
+
+    tk.after(0, runGame)
+    s.pack()
+    s.focus_set()
+    tk.mainloop()
+
+if __name__ == '__main__':
+    main()
