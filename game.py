@@ -35,18 +35,23 @@ def introScreen():
 
     play_button = Button(tk, text="Play", font="Times 30", command=playPressed, anchor=CENTER)
     play_button.pack()
-    play_button.place(x=(0.45 * WIDTH), y=(0.35 * HEIGHT))
+    play_button.place(x=(0.5 * WIDTH), y=(0.35 * HEIGHT))
 
     instruction_label = Button(tk, text="Instructions", command=instPressed, font="Times 30")
     instruction_label.pack()
-    instruction_label.place(x=(0.40 * WIDTH), y=(0.50 * HEIGHT))
+    instruction_label.place(x=(0.44 * WIDTH), y=(0.50 * HEIGHT))
 
 
 def instructionScreen():
+    global instructions, keys,message
     play_button.destroy()
     instruction_label.destroy()
     screen.delete(start_message,background)
-    screen.create_text(500,100, text= "Instructions", font= "Times 40")
+    back_to_intro_button = Button(tk, text="Back", font="Times 25", command=backToIntroButton, anchor=CENTER)
+    back_to_intro_button.pack()
+    back_to_intro_button.place(x=(0.05 * WIDTH), y=(0.05 * HEIGHT))
+    instructions= screen.create_text(500,100, text= "Instructions", font= "Times 40")
+    message= screen.create_text(500, 650, text= "Have Fun !!!", font= "Times 40")
 
 
 def delete_pre_play():
@@ -55,23 +60,28 @@ def delete_pre_play():
     hard_level_button.destroy()
     back_to_intro_button.destroy()
 
+def inst_pre_play():
+    screen.delete(instructions, message)
 
 def easyButton():
     setInitialValues(EASY)
     delete_pre_play()
     playScreen()
+    screen.delete(instructions)
 
 
 def mediumButton():
     setInitialValues(MEDIUM)
     delete_pre_play()
     playScreen()
+    screen.delete(instructions)
 
 
 def hardButton():
     setInitialValues(HARD)
     delete_pre_play()
     playScreen()
+    screen.delete(instructions)
 
 
 def backToIntroButton():
@@ -108,7 +118,7 @@ def prePlayScreen():
 
 def setInitialValues(level):
     global ball_launched, ball_x, ball_y, ball_speedx, ball_speedy, ball_colour, ball_radius, constant_speed_inc, tile_x, tile_y, \
-        tile_speedx, tile_speedy, tile_width, tile_height, coins_x, coins_y, coins_colour, coins_radius, game_running
+        tile_speedx, tile_speedy, tile_width, tile_height, coins_x, coins_y, coins_colour, coins_radius, num_coins, game_running
 
     # ball variables
     ball_colour = "black"
@@ -129,6 +139,7 @@ def setInitialValues(level):
     coins_y = []
     coins_colour = []
     coins_radius = 23
+    num_coins= 0
 
     # game variables
     game_running = True
@@ -141,21 +152,23 @@ def setInitialValues(level):
         tile_speedy = 0
         ball_speedx = 0
         ball_speedy = 0
+        num_coins   = 15
     elif level == MEDIUM:
         tile_speedx = 0
         tile_speedy = 0
         ball_speedx = 0
         ball_speedy = 0
+        num_coins   = 25
     elif level == HARD:
         tile_speedx = 0
         tile_speedy = 0
         ball_speedx = 0
         ball_speedy = 0
+        num_coins   = 35
 
 
 def drawObject():
     global ball, tile, ball_pic, tile_pic
-
     ball_pic = PhotoImage(file="fishthenet.gif")
     ball = screen.create_image(ball_x, ball_y, image=ball_pic)
     tile_pic = PhotoImage(file = "boat.gif")
@@ -168,8 +181,8 @@ def getDistance(x1, y1, x2, y2):
     return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 def DrawCoins():
-    global coinx, coiny, Coins
-    for m in range(15):
+    global coinx, coiny, coins
+    for m in range(num_coins):
         distance_right = False
         while distance_right == False:
             coinx = randint(0, 1200)
@@ -189,51 +202,47 @@ def DrawCoins():
         coins_x.append(coinx)
         coins_y.append(coiny)
         coins_colors = choice(["red", "yellow", "green", "blue"])
-        Coins = screen.create_oval(coinx - coins_radius, coiny - coins_radius, coinx + coins_radius, coiny + coins_radius, fill=coins_colors,
+        coins = screen.create_oval(coinx - coins_radius, coiny - coins_radius, coinx + coins_radius, coiny + coins_radius, fill=coins_colors,
                          outline= coins_colors)
 
 def updateBallPosition():
-    global Coins,  tile_x, tile_y, ball_x, ball_y, ball_speedx, ball_speedy, ball_radius, tile_speedx, tile_speedy
+    global coins,  tile_x, tile_y, ball_x, ball_y, ball_speedx, ball_speedy, ball_radius, tile_speedx, tile_speedy
 
     if ball_x + 250 >= WIDTH:
+        ball_speedx -= constant_speed_inc
+
+    elif ball_x + 100 <= 0:
         ball_speedx += constant_speed_inc
+    elif ball_y - 70 <= 0:
+        ball_speedy += constant_speed_inc - 10
 
-    elif ball_x + 50 <= 0:
-        ball_speedx += constant_speed_inc
+    if ball_y + 50>= tile_y:
+        if ball_x   <= tile_x-10  and ball_x + 150 >= tile_x - 100 :
+            ball_speedy -= constant_speed_inc
 
-    if ball_y + 50 >= tile_y:
-        if ball_x <= tile_x - 100 and ball_x + 150 >= tile_x - 50:
-            ball_speedy += constant_speed_inc
 
-        if ball_y + 100 <= tile_y:
-            ball_speedx += constant_speed_inc
-
-    elif ball_y - 30 <= 0:
-        ball_speedy += constant_speed_inc
-
-    if tile_x + 150 >= WIDTH:
-        tile_speedx += constant_speed_inc - 10
+    if tile_x + 170 >= WIDTH:
+        tile_speedx -= constant_speed_inc-10
 
     elif tile_x - 150 <= 0:
-        tile_speedx += constant_speed_inc + 10
+        tile_speedx += constant_speed_inc
 
-    elif ball_x >= coinx + coins_radius and ball_y + ball_radius >= coiny + coins_radius and ball_x + ball_radius >= coinx:
+    elif ball_x >= coinx- coins_radius and ball_y >= coiny- coins_radius  and ball_x  >= coinx:
         print("heeeee")
         collided = True
         if collided == True:
-            screen.delete(Coins)
+            screen.delete(coins)
 
-        ball_speedy = constant_speed_inc
 
     if ball_y >= HEIGHT:
         ball_speedx = 0
         ball_speedy = 0
         tile_speedx = 0
         tile_speedy = 0
-        tile_x = (0.50 * WIDTH)
-        tile_y = (.90 * HEIGHT)
-        ball_x = (.50 * WIDTH)
-        ball_y = (.80 * HEIGHT)
+        tile_x = (0.45 * WIDTH)
+        tile_y = (.87 * HEIGHT)
+        ball_x = (.45 * WIDTH)
+        ball_y = (.82 * HEIGHT)
 
     tile_x = tile_x + tile_speedx
     tile_y = tile_y + tile_speedy
@@ -244,9 +253,10 @@ def updateBallPosition():
 
 def playScreen():
     print("hello")
-    drawObject()
     DrawCoins()
-    updateBallPosition()
+    while True:
+        drawObject()
+        updateBallPosition()
 
 
 def runGame():
@@ -257,9 +267,10 @@ def runGame():
         pass
     elif state == PLAY:
         playScreen()
-
     screen.update()
     sleep(0.03)
+
+
 
 
 def keyPressedHandler(event):
@@ -276,19 +287,17 @@ def keyPressedHandler(event):
 
     elif event.keysym == "Up" and not ball_launched:
         print("UP")
-        ball_launched = True
-        ball_speedy = constant_speed_inc
-        ball_speedx = constant_speed_inc
+        # ball_launched = True
+
+        ball_speedx -= constant_speed_inc
+        ball_speedy -= constant_speed_inc
         updateBallPosition()
-    #
-    # elif event.keysym == "Q" and "q":
-    #     print("ddd")
-    #     screen.delete(ball, tile)
-
-
 
 def keyReleasedHandler(event):
-    print("yellow")
+    global tile_speedx, tile_speedy
+
+    tile_speedx = 0
+    tile_speedy = 0
 
 
 def main():
