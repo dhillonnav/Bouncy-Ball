@@ -5,7 +5,7 @@ from time import *
 
 
 # game constants
-WIDTH = 1000
+WIDTH = 1200
 HEIGHT = 750
 PLAY = 0
 INST = 1
@@ -31,7 +31,7 @@ def introScreen():
     global background, start_message, play_button, instruction_label, bac_img
 
     bac_img = PhotoImage(file="back1.gif")
-    background = screen.create_image(500, 400, image=bac_img)
+    background = screen.create_image(0.5 * WIDTH, 0.4 * HEIGHT, image=bac_img)
 
     start_message = screen.create_text((0.35 * WIDTH), (0.05 * WIDTH), text="Rescue The Fish", font="Times 38",
                                        fill="red", anchor=W)
@@ -49,8 +49,12 @@ def introScreen():
 
 def instructionScreen():
 
-    global instructions, keys, message, keys_pic
+    global instructions, keys, message, keys_pic, back_to_intro_button, game_pic, game
     play_button.destroy()
+    keys_pic = PhotoImage(file="keys.gif")
+    keys = screen.create_image(0.2 * WIDTH, 0.5 * HEIGHT, image=keys_pic)
+    game_pic = PhotoImage(file="game.gif")
+    game = screen.create_image(0.7 * WIDTH, 0.5 * HEIGHT, image=game_pic)
     instruction_label.destroy()
     screen.delete(start_message,background)
     back_to_intro_button = Button(tk, text="Back", font="Times 25", command= inst_pre_play, anchor=CENTER)
@@ -66,10 +70,15 @@ def delete_pre_play():
     hard_level_button.destroy()
     back_to_intro_button.destroy()
 
+
 def inst_pre_play():
+    global keys
     screen.delete(instructions, message)
     introScreen()
+    screen.delete(keys, game)
     delete_pre_play()
+    back_to_intro_button.destroy()
+    screen.delete(keys)
 
 def easyButton():
     setInitialValues(EASY)
@@ -109,23 +118,23 @@ def prePlayScreen():
     # draw new buttons
     easy_level_button = Button(tk, text="Easy", command=easyButton, font="Times 30")
     easy_level_button.pack()
-    easy_level_button.place(x=(0.45 * WIDTH), y=(0.35 * HEIGHT))
+    easy_level_button.place(x=(0.5 * WIDTH), y=(0.35 * HEIGHT))
 
     medium_level_button = Button(tk, text="Medium", command=mediumButton, font="Times 30")
     medium_level_button.pack()
-    medium_level_button.place(x=(0.425 * WIDTH), y=(0.50 * HEIGHT))
+    medium_level_button.place(x=(0.5 * WIDTH), y=(0.50 * HEIGHT))
 
     hard_level_button = Button(tk, text="Hard", command=hardButton, font="Times 30")
     hard_level_button.pack()
-    hard_level_button.place(x=(0.45 * WIDTH), y=(0.65 * HEIGHT))
+    hard_level_button.place(x=(0.5 * WIDTH), y=(0.65 * HEIGHT))
 
     back_to_intro_button = Button(tk, text="Back", font="Times 25", command=backToIntroButton, anchor=CENTER)
     back_to_intro_button.pack()
-    back_to_intro_button.place(x=(0.05 * WIDTH), y=(0.05 * HEIGHT))
+    back_to_intro_button.place(x=(0.1 * WIDTH), y=(0.05 * HEIGHT))
 
 
 def setInitialValues(level):
-    global time, timer_x, timer_y, detect, leftShark, sharks_y2, sharksy2,sharks2_speedx, sharks2, sharksx2,sharks_pic2, sharks, sharksx, sharks_x, sharks_y, sharksy, sharks_pic, sharks_speedx, sharks_speedy, ball_launched, ball_x, ball_y, ball_speedx, ball_speedy, ball_colour, ball_radius, constant_speed_inc, tile_x, tile_y, \
+    global time_value, time, timer_x, timer_y, detect, leftShark, sharks_y2, sharksy2,sharks2_speedx, sharks2, sharksx2,sharks_pic2, sharks, sharksx, sharks_x, sharks_y, sharksy, sharks_pic, sharks_speedx, sharks_speedy, ball_launched, ball_x, ball_y, ball_speedx, ball_speedy, ball_colour, ball_radius, constant_speed_inc, tile_x, tile_y, \
         tile_speedx, tile_speedy, tile_width, tile_height, coins_x, coins_y, num_sharks, game_running, fishx, fishy
 
     # ball variables
@@ -133,7 +142,6 @@ def setInitialValues(level):
     ball_x = (.45 * WIDTH)
     ball_y = (.82 * HEIGHT)
     ball_radius = 57
-    constant_speed_inc = 15
     ball_launched= False
 
     # tile variables
@@ -163,14 +171,13 @@ def setInitialValues(level):
     timer_x= 850
     timer_y= 0
     if level == EASY:
-        sharks_speedx= 0
-        sharks2_speedx = 0
         sharks_speedy = 0
         tile_speedx = 0
-        tile_speedy = 0
         ball_speedx = 0
         ball_speedy = 0
-        num_sharks = 2
+        time_value = 60
+        num_sharks = 1
+        constant_speed_inc= 20
         for num_Sharks in range( num_sharks):
             sharksy = randint(80, 0.4 * HEIGHT)
             sharksy2 = randint(80, 0.4* HEIGHT)
@@ -187,7 +194,9 @@ def setInitialValues(level):
         ball_speedx = 0
         ball_speedy = 0
         sharks2_speedx= 0
-        num_sharks  = 3
+        constant_speed_inc = 15
+        time_value= 50
+        num_sharks  = 2
         for num_Sharks in range(num_sharks):
             sharksy = randint(80, 0.4 * HEIGHT)
             sharks_y.append(sharksy)
@@ -201,12 +210,15 @@ def setInitialValues(level):
         tile_speedy = 0
         ball_speedx = 0
         ball_speedy = 0
-        num_sharks = 4
+        time_value= 40
+        num_sharks = 3
+        constant_speed_inc = 10
         for num_Sharks in range(num_sharks):
             sharksy = randint(80, 0.4 * HEIGHT)
-            sharks_y.append(sharksy)
-            sharks.append(0)
-            sharks2.append(0)
+            while sharksy >= fishy:
+                sharks_y.append(sharksy)
+                sharks.append(0)
+                sharks2.append(0)
 
 
 def drawObject():
@@ -217,7 +229,7 @@ def drawObject():
     tile = screen.create_image(tile_x, tile_y, image=tile_pic)
     timer= screen.create_rectangle(timer_x, timer_y, timer_x + 100, timer_y +50, fill="hot pink", outline= "hot pink")
     timer_text= screen.create_text(timer_x + 50, timer_y+ 70, text= "Time", font= "Times 20")
-    time_text= screen.create_text(timer_x+25, timer_y+ 25, text= int(time), font= "times 25")
+    time_text= screen.create_text(timer_x+25, timer_y+ 25, text= int(time_value), font= "times 25")
     screen.delete(background)
     screen.update()
     sleep(0.03)
@@ -225,8 +237,7 @@ def drawObject():
 def main_fish():
     global fish_pic, fish
     fish_pic = PhotoImage(file="fish.gif")
-    if fishx != sharksx and fishy != sharks_y:
-        fish = screen.create_image(fishx, fishy, image=fish_pic)
+    fish = screen.create_image(fishx, fishy, image=fish_pic)
 
 def DrawSharks():
     global sharks, sharks2
@@ -234,8 +245,8 @@ def DrawSharks():
     for i in range (num_sharks):
         sharks[i] = screen.create_image(sharksx, sharks_y[i], image=sharks_pic)
         if leftShark == True:
-            screen.delete(sharks[i])
-            sharks2[i] = screen.create_image(sharksx, sharks_y[i], image=sharks_pic2)
+                screen.delete(sharks[i])
+                sharks2[i] = screen.create_image(sharksx, sharks_y[i], image=sharks_pic2)
 
 def deleteSharks():
     global sharks, sharks2
@@ -246,9 +257,8 @@ def deleteSharks():
 def detectColision():
     global fish
     if leftShark and ball_x >= sharksx - 90 and ball_y >= sharksx - 90 + 183:
+        print("Collided")
         screen.delete(fish)
-        deleteSharks()
-
 
 def updateBallPosition():
     global fish, sharks, leftShark, sharksx2, sharks2_speedx, sharksx, sharks_speedy, sharks_speedx,  tile_x, tile_y, ball_x, ball_y, ball_speedx, ball_speedy, tile_speedx, tile_speedy
@@ -300,7 +310,6 @@ def updateBallPosition():
         ball_y = (.82 * HEIGHT)
 
     tile_x = tile_x + tile_speedx
-    tile_y = tile_y + tile_speedy
     ball_x = ball_x + ball_speedx
     ball_y = ball_y + ball_speedy
     sharksx = sharksx + sharks_speedx
@@ -308,10 +317,10 @@ def updateBallPosition():
 
 def endGame():
     global fish, ball, tile, text, time_text, time_text, timer
-    if time <= 0:
+    if time_value <= 0:
         screen.delete(time_text)
         tryAgain_Button()
-        text = screen.create_text(500, 500, text="Thanks for Playing!!!", font="Times 30")
+        text = screen.create_text(0.57*WIDTH, 0.1*HEIGHT, text="Thanks for Playing!!!", font="Times 30", fill= "red")
         screen.delete(ball, tile, fish)
 
 def tryAgain_pressed():
@@ -326,18 +335,18 @@ def tryAgain_Button():
     global  try_again_button, quit_game_button
     try_again_button = Button(tk, text="Try Again", font="Times 25", command= tryAgain_pressed, anchor=CENTER)
     try_again_button.pack()
-    try_again_button.place(x=(0.5 * WIDTH), y=(0.3 * HEIGHT))
+    try_again_button.place(x=(0.45 * WIDTH), y=(0.3 * HEIGHT))
 
     setInitialValues(quitgame)
     quit_game_button = Button(tk, text="Quit Game", font="Times 25", command= tk.destroy, anchor=CENTER)
     quit_game_button.pack()
-    quit_game_button.place(x=(0.5 * WIDTH), y=(0.55 * HEIGHT))
+    quit_game_button.place(x=(0.45 * WIDTH), y=(0.55 * HEIGHT))
 
 
 def playScreen():
-    global time
+    global time_value
     while True:
-        time -= 0.1
+        time_value -= 0.2
         DrawSharks()
         main_fish()
         drawObject()
