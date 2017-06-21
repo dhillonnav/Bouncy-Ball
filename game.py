@@ -30,19 +30,19 @@ def instPressed():
 def introScreen():
     global background, start_message, play_button, instruction_label, bac_img
 
-    bac_img = PhotoImage(file="back1.gif")
+    bac_img = PhotoImage(file="back.gif")
     background = screen.create_image(0.5 * WIDTH, 0.4 * HEIGHT, image=bac_img)
 
-    start_message = screen.create_text((0.35 * WIDTH), (0.05 * WIDTH), text="Rescue The Fish", font="Times 48",
-                                       fill="Yellow", anchor=W)
+    start_message = screen.create_text((0.35 * WIDTH), (0.05 * WIDTH), text="Finding NEMO", font="Times 48",
+                                       fill="Orange", anchor=W)
 
     play_button = Button(tk, text="Play", font="Times 30", command=playPressed, anchor=CENTER)
     play_button.pack()
-    play_button.place(x=(0.5 * WIDTH), y=(0.35 * HEIGHT))
+    play_button.place(x=(0.2 * WIDTH), y=(0.5 * HEIGHT))
 
     instruction_label = Button(tk, text="Instructions", command=instPressed, font="Times 30")
     instruction_label.pack()
-    instruction_label.place(x=(0.45 * WIDTH), y=(0.50 * HEIGHT))
+    instruction_label.place(x=(0.15 * WIDTH), y=(0.60 * HEIGHT))
     screen.delete(instructions, message)
     back_to_intro_button.destroy()
 
@@ -60,8 +60,8 @@ def instructionScreen():
     back_to_intro_button = Button(tk, text="Back", font="Times 25", command= inst_pre_play, anchor=CENTER)
     back_to_intro_button.pack()
     back_to_intro_button.place(x=(0.1 * WIDTH), y=(0.05 * HEIGHT))
-    instructions= screen.create_text(500,100, text= "Instructions", font= "Times 40")
-    message= screen.create_text(500, 650, text= "Have Fun !!!", font= "Times 40")
+    instructions= screen.create_text(500,100, text= "Instructions", font= "Times 40", fill= "orange")
+    message= screen.create_text(500, 650, text= "Have Fun !!!", font= "Times 40", fill= "orange")
 
 
 def delete_pre_play():
@@ -118,15 +118,15 @@ def prePlayScreen():
     # draw new buttons
     easy_level_button = Button(tk, text="Easy", command=easyButton, font="Times 30")
     easy_level_button.pack()
-    easy_level_button.place(x=(0.5 * WIDTH), y=(0.35 * HEIGHT))
+    easy_level_button.place(x=(0.2 * WIDTH), y=(0.35 * HEIGHT))
 
     medium_level_button = Button(tk, text="Medium", command=mediumButton, font="Times 30")
     medium_level_button.pack()
-    medium_level_button.place(x=(0.5 * WIDTH), y=(0.50 * HEIGHT))
+    medium_level_button.place(x=(0.2 * WIDTH), y=(0.50 * HEIGHT))
 
     hard_level_button = Button(tk, text="Hard", command=hardButton, font="Times 30")
     hard_level_button.pack()
-    hard_level_button.place(x=(0.5 * WIDTH), y=(0.65 * HEIGHT))
+    hard_level_button.place(x=(0.2 * WIDTH), y=(0.65 * HEIGHT))
 
     back_to_intro_button = Button(tk, text="Back", font="Times 25", command=backToIntroButton, anchor=CENTER)
     back_to_intro_button.pack()
@@ -134,7 +134,7 @@ def prePlayScreen():
 
 
 def setInitialValues(level):
-    global turtle,turtle_y, turtlex, turtle_pic, medium, hard, collided3, sharksx3,sharksy3, sharks_y3, sharks3, sharks_3, shark_constant_inc, collided_2, orientation,sharks_1,sharks_2, collided, time_value, time, timer_x, timer_y, detect, leftShark, sharks_y2, sharksy2,sharks2_speedx, sharks2, sharksx2,sharks_pic2, sharks, sharksx, sharks_x, sharks_y, sharksy, sharks_pic, sharks_speedx, sharks_speedy, ball_launched, ball_x, ball_y, ball_speedx, ball_speedy, ball_colour, ball_radius, constant_speed_inc, tile_x, tile_y, \
+    global sheldon_pic, sheldon,sheldonx, sheldony,sheldon_y,leftShark_3, turtle,turtle_y, turtlex, turtle_pic, medium, hard, collided3, sharksx3,sharksy3, sharks_y3, sharks3, sharks_3, shark_constant_inc, collided_2, orientation,sharks_1,sharks_2, collided, time_value, time, timer_x, timer_y, detect, leftShark, sharks_y2, sharksy2,sharks2_speedx, sharks2, sharksx2,sharks_pic2, sharks, sharksx, sharks_x, sharks_y, sharksy, sharks_pic, sharks_speedx, sharks_speedy, ball_launched, ball_x, ball_y, ball_speedx, ball_speedy, ball_colour, ball_radius, constant_speed_inc, tile_x, tile_y, \
         tile_speedx, tile_speedy, tile_width, tile_height, coins_x, coins_y, num_sharks, game_running, fishx, fishy
 
     # ball variables
@@ -158,7 +158,11 @@ def setInitialValues(level):
     sharks_y2= []
     sharks_y3= []
     leftShark= False
+    leftShark_3= False
     sharks= []
+    sheldon= []
+    sheldonx= WIDTH
+    sheldon_y= []
     orientation= ["left_shark", "right_shark"]
     sharks3= []
     sharks_3= []
@@ -167,7 +171,8 @@ def setInitialValues(level):
     sharks_1= []
     turtle_pic= PhotoImage(file= "tutu.gif")
     sharks_pic = PhotoImage(file="sharks.gif")
-    sharks_pic2 = PhotoImage(file="shark2.gif")
+    sharks_pic2= PhotoImage(file= "shark2.gif")
+    sheldon_pic = PhotoImage(file="sheldon.gif")
     fishx= 0.5*WIDTH
     fishy = 0.05 * HEIGHT
     turtlex= 0
@@ -220,17 +225,16 @@ def setInitialValues(level):
         for num_Sharks in range(num_sharks):
             sharksy = randint(0.2*HEIGHT, 0.3 * HEIGHT)
             sharksy2 = randint(0.3*HEIGHT, 0.4 * HEIGHT)
-            sharksy3= randint(0.4*HEIGHT, 0.5 * HEIGHT)
-            sharks_y3.append(sharksy3)
-            sharks_3.append(0)
-            sharks3.append(0)
+            sheldony = randint(0.5 * HEIGHT, 0.6 * HEIGHT)
+            sheldon.append(0)
+            sheldon_y.append(sheldony)
             sharks_y.append(sharksy)
             sharks_y2.append(sharksy2)
             sharks.append(0)
             sharks2.append(0)
             sharks_1.append(0)
             sharks_2.append(0)
-            sharksx3 = WIDTH
+
 
     elif level == HARD:
         hard = True
@@ -246,7 +250,10 @@ def setInitialValues(level):
         constant_speed_inc = 10
         for num_Sharks in range( num_sharks):
             sharksy = randint(0.2*HEIGHT, 0.3 * HEIGHT)
-            sharksy2 = randint(0.3*HEIGHT, 0.5* HEIGHT)
+            sharksy2 = randint(0.5*HEIGHT, 0.6* HEIGHT)
+            sheldony = randint(0.3 * HEIGHT, 0.5 * HEIGHT)
+            sheldon.append(0)
+            sheldon_y.append(sheldony)
             sharks_y.append(sharksy)
             sharks_y2 .append(sharksy2)
             sharksy3 = randint(0.4 * HEIGHT, 0.5 * HEIGHT)
@@ -262,15 +269,12 @@ def setInitialValues(level):
             turtle_y.append(turtley)
             turtle.append(0)
 
-
-
-
 def countDown():
     global count, background
     screen.delete(background)
     for i in range(3, -1, -1):
         if i == 0:
-            count= screen.create_text(0.5*WIDTH, 0.5*HEIGHT, text= "Ready...Set...Go", font= "Times, 70", fill= "red")
+            count= screen.create_text(0.5*WIDTH, 0.5*HEIGHT, text= "Ready...Set...Save Dory", font= "Times, 70", fill= "red")
         else:
             count= screen.create_text(0.5*WIDTH, 0.5 *HEIGHT, text= i, font="Times, 70", fill= "red")
         screen.update()
@@ -287,8 +291,16 @@ def drawObject():
     timer_text= screen.create_text(timer_x + 70, timer_y+ 70, text= "Time", font= "Times 20")
     time_text= screen.create_text(timer_x+50, timer_y+ 25, text= int(time_value), font= "times 25")
     screen.delete(background)
-    screen.update()
     sleep(0.03)
+
+def drawSheldon():
+    global sheldonx
+    if medium == True:
+        for i in range(num_sharks):
+            sheldon[i] = screen.create_image(sheldonx, sheldony,image= sheldon_pic)
+            screen.update()
+            screen.delete(sheldon[i])
+
 
 def main_fish():
     global fish_pic, fish
@@ -296,61 +308,66 @@ def main_fish():
     fish = screen.create_image(fishx, fishy, image=fish_pic)
 
 def DrawSharks():
-    global turtle, turtle_y, sharks, sharks2, sharksx, collided, num_sharks, sharks_1, sharksx2, sharks_2, orientation
-    for i in range(2):
-        if orientation[i] == True:
-            sharks[i] = screen.create_image(sharksx, sharks_y[i], image=sharks_pic)
-            sharks3[i] = screen.create_image(sharksx, sharks_y3[i], image=sharks_pic)
-            sharks_2[i] = screen.create_image(sharksx3, sharks_y2[i], image=sharks_pic2)
-        if orientation[i] == False:
-            sharks2[i] = screen.create_image(sharksx, sharks_y[i], image=sharks_pic2)
-            sharks_1[i] = screen.create_image(sharksx2, sharks_y2[i], image=sharks_pic)
-            sharks_3[i] = screen.create_image(sharksx3, sharks_y3[i], image=sharks_pic)
+    global  ball_y,turtlex,turtle, turtle_y, sharks, sharks2, sharksx, collided, num_sharks, sharks_1, sharksx2, sharks_2, orientation
 
     for i in range (num_sharks):
         sharks[i] = screen.create_image(sharksx, sharks_y[i], image=sharks_pic)
         sharks_2[i] = screen.create_image(sharksx2, sharks_y2[i], image=sharks_pic2)
-        sharks3[i] = screen.create_image(sharksx3, sharks_y3[i], image=sharks_pic)
-        if hard == True:
-            turtle[i]= screen.create_image(turtlex, turtle_y[i], image= turtle_pic)
 
         if leftShark == True:
-            screen.delete(sharks[i], sharks_2[i], sharks3[i])
+            screen.delete(sharks[i], sharks_2[i])
             sharks2[i] = screen.create_image(sharksx, sharks_y[i], image=sharks_pic2)
             sharks_1[i] = screen.create_image(sharksx2, sharks_y2[i], image=sharks_pic)
-            sharks_3[i] = screen.create_image(sharksx3, sharks_y3[i], image=sharks_pic2)
+
+        if hard == True:
+            turtle[i]= screen.create_image(turtlex, turtle_y[i], image= turtle_pic)
+            sheldon[i] = screen.create_image(sheldonx, sheldony, image=sheldon_pic)
+            screen.update()
+            screen.delete(sheldon[i])
+            if turtlex >= WIDTH:
+                turtlex =  0
+                print (turtlex)
+            if ball_y - 50 <= turtle_y[i]:
+                turtlex= -5555
+                ball_y = ball_y + constant_speed_inc-10
+                screen.delete(turtle)
+
 
 
 def deleteSharks():
     global sharks, sharks2, sharks_1, sharks_2
     for i in range(num_sharks):
-        screen.delete(sharks[i], sharks2[i], sharks_1[i], sharks_2[i], sharks3[i], sharks_3[i])
+        screen.delete(sharks[i], sharks2[i], sharks_1[i], sharks_2[i])
 
 def detectColision():
     global collided3, sharks3, fish, collided, num_sharks, sharksx, sharksx2, sharksx3, sharks_speedx, leftShark, collided_2, ball_speedy
 
-    if ball_y <= sharksy:
+
+
+
+
+
+    if ball_y- 50 <= sharksy:
         if ball_x <= sharksx:
             collided_2 = True
-    if ball_y <= sharksy2:
+
+    if ball_y  - 50 <= sharksy2 :
         if ball_x <= sharksx2:
             collided = True
     else:
         collided = False
 
-    if ball_y <= sharksy3:
-        collided3 = True
-        ball_speedy = constant_speed_inc
 
     if collided == True:
         sharksx2 = -88500
-        ball_speedy = +shark_constant_inc
+        ball_speedy = + shark_constant_inc
 
     if collided_2 == True:
         sharksx = + 88850
 
+
 def updateBallPosition():
-    global turtlex,fish, sharks, leftShark, sharksx2, sharksx3, sharks2_speedx, sharksx, sharks_speedy, sharks_speedx,  tile_x, tile_y, ball_x, ball_y, ball_speedx, ball_speedy, tile_speedx, tile_speedy
+    global sheldonx, turtlex,fish, sharks, leftShark3, leftShark, sharksx2, sharksx3, sharks2_speedx, sharksx, sharks_speedy, sharks_speedx,  tile_x, tile_y, ball_x, ball_y, ball_speedx, ball_speedy, tile_speedx, tile_speedy
 
     if ball_x + 50 >= WIDTH:
         ball_speedx = -constant_speed_inc
@@ -376,24 +393,23 @@ def updateBallPosition():
 
     if sharksx + 91 >= WIDTH:
         leftShark = False
+
     if sharksx2 + 91 >= WIDTH:
             leftShark= True
-    if medium == True:
-        if sharksx3 - 91 <= 0:
-            leftShark = True
 
-        if sharksx3 + 91 >= WIDTH:
-            leftShark = False
+
+    if sheldonx <= 10:
+        sheldonx= WIDTH
+
+    if ball_y <= sheldony:
+        sheldonx = 8555
+        ball_y = ball_y - constant_speed_inc
+
 
     if leftShark:
         sharks_speedx = shark_constant_inc
     else:
         sharks_speedx = -shark_constant_inc
-
-    if hard == True:
-        if turtlex >= WIDTH:
-            turtlex = 0
-
 
     if ball_y >= HEIGHT:
         ball_speedx = 0
@@ -410,7 +426,7 @@ def updateBallPosition():
     ball_y = ball_y + ball_speedy
     sharksx = sharksx + sharks_speedx
     sharksx2 = sharksx2 - sharks_speedx
-    sharksx3 = sharksx3 + sharks_speedx
+    sheldonx= sheldonx - constant_speed_inc
     turtlex= turtlex + constant_speed_inc
     screen.delete(turtle)
 
@@ -422,6 +438,7 @@ def endGame():
         tryAgain_Button()
         text = screen.create_text(0.5*WIDTH, 0.15*HEIGHT, text="Thanks for Playing!!!", font="Times 40", fill= "blue")
         screen.delete(ball, tile, fish)
+
     elif collided_2 == True:
         screen.delete(time_text)
         tryAgain_Button()
@@ -458,6 +475,7 @@ def playScreen():
         DrawSharks()
         main_fish()
         drawObject()
+        drawSheldon()
         updateBallPosition()
         deleteSharks()
         detectColision()
